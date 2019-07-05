@@ -51,8 +51,10 @@ void RunTally() {                       // simple logic that compares camera ATE
 
 void Booting() {
     digitalWrite(8, LOW);
-    delay(50);
+    delay(30);
     digitalWrite(8, HIGH);
+    delay(30);
+    digitalWrite(8, LOW);
   }
 
 void setup() {
