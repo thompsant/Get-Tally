@@ -65,7 +65,7 @@ void setup() {
 void loop() {
   tallyLength = tally.read(tallyData);
   
-  if ( tallyLength >= 0 && tallyLength < 128 ) {
+  if ( tallyLength >= 0 && tallyLength < sizeof(tallyData) ) {
       Booting();
     }
   if ( tallyLength == sizeof(tallyData) && tallyLength == 128 ) {
