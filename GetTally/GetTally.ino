@@ -28,19 +28,42 @@ byte tallyData[128];
 int tallyLength = 0;                    // Tally Data length is 128 bytes
 int atemID = 7;                         // ATEM ID of the camera
 
+void SOS() {                            // outputs SOS pattern on LED
+  digitalWrite(8, LOW)
+  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(1000); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(1000); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(1000); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW);
+  delay(2000);
+}
+
+void RunTally() {                       // simple logic that compares camera ATEM ID to entry in the data array
+  if ( tallyData[atemID - 1] == 1 ) {
+    digitalWrite(8, HIGH); }
+  else {
+    digitalWrite(8, LOW); }
+}
+
 void setup() {
   tally.begin();                        // begins tally control
   tally.setOverride(false);             // does not override incoming tally
   pinMode(8, OUTPUT);                   // configures pin 8 as an output
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop() {
-  tallyLength = tally.read(tallyData);  // takes in an array and fills it with the data in the ITDATA register
-
-  if ( data[atemID - 1] == 1 ) {        // simple logic that compares camera ATEM ID to entry in the data array
-    digitalWrite(8, HIGH); }
-  else {
-    digitalWrite(8, LOW); }
+  tallyLength = tally.read(tallyData);  // takes in an array and fills it with the data
+                                        // in the ITDATA register and returns data length
+  if ( tallyLength == sizeof(tallyData) && tallyLength == 128 ) {
+    RunTally();
+  } else {
+    SOS()
+  }
   
   delay(33);                            // wait for 33 milliseconds or just shy of 1 frame at 29.97 or 30 fps
 }
