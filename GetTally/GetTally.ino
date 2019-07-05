@@ -23,12 +23,13 @@
 // includes the Blackmagic Design SDI Control library.
 #include <BMDSDIControl.h>
 
-BMD_SDITallyControl_I2C tally(0x6E);  // declares Tally Control object using the default I²C address
-byte tallyData[128];
-int tallyLength = 0;                    // Tally Data length is 128 bytes
+BMD_SDITallyControl_I2C tally(0x6E);    // declares Tally Control object using the default I²C address
+byte tallyData[128];                    // Tally Data length is 128 bytes
+int tallyLength = 0;                    // length of data read from register
 int atemID = 4;                         // ATEM ID of the camera
 
-void SOS() {                            // outputs SOS pattern on LED
+
+void SOS() {                            // outputs SOS pattern to LED
   digitalWrite(8, LOW);
   digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
   digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
@@ -49,10 +50,9 @@ void RunTally() {                       // simple logic that compares camera ATE
     digitalWrite(8, LOW); }
 }
 
-void Booting() {
-    digitalWrite(8, LOW);
+void Booting() {                        // rapidly blink LED if tallyLength is between 0 - 128
     digitalWrite(8, HIGH);
-    delay(50);
+    delay(30);
     digitalWrite(8, LOW);
   }
 
@@ -60,19 +60,19 @@ void setup() {
   tally.begin();                        // begins tally control
   tally.setOverride(false);             // does not override incoming tally
   pinMode(8, OUTPUT);                   // configures pin 8 as an output
-  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop() {
-  tallyLength = tally.read(tallyData);
+  tallyLength = tally.read(tallyData);  // reads tally data from ITDATA register
   
+
   if ( tallyLength >= 0 && tallyLength < sizeof(tallyData) ) {
-    Booting();
+    Booting();                          // looks to see if tally data is valid
   } else if ( tallyLength == sizeof(tallyData) ) {
-    RunTally();
+    RunTally();                         // run if normal tally data is received
   } else {
-    SOS();
+    SOS();                              // something else is wrong, send help
   }
   
-  delay(30);
+  delay(30);                            // wait for a little less than one frame at 30 fps
 }
