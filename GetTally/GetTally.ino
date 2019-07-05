@@ -33,13 +33,13 @@ void SOS() {                            // outputs SOS pattern on LED
   digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
   digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
   digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(1000); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(1000); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(1000); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(500); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(500); digitalWrite(8, LOW); delay(100);
+  digitalWrite(8, HIGH); delay(500); digitalWrite(8, LOW); delay(100);
   digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
   digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
   digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW);
-  delay(2000);
+  delay(1000);
 }
 
 void RunTally() {                       // simple logic that compares camera ATEM ID to entry in the data array
