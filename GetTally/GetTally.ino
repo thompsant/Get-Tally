@@ -66,12 +66,12 @@ void loop() {
   tallyLength = tally.read(tallyData);
   
   if ( tallyLength >= 0 && tallyLength < sizeof(tallyData) ) {
-      Booting();
-    }
-  if ( tallyLength == sizeof(tallyData) && tallyLength == 128 ) {
+    Booting();
+  } else if ( tallyLength == sizeof(tallyData) && tallyLength == 128 ) {
     RunTally();
   } else {
     SOS();
   }
-    delay(30);
+  
+  delay(30);
 }
