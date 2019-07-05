@@ -15,29 +15,32 @@
    created 03 July 2019
    by Anthony Thompson
    modified 04 July 2019
-   by Anthony Thompson 
+   by Anthony Thompson
+   modified 05 July 2019
+   by Anthony Thompson
 */
 
 // includes the Blackmagic Design SDI Control library.
 #include <BMDSDIControl.h>
 
 BMD_SDITallyControl_I2C tally(0x6E);  // declares Tally Control object using the default I²C address
-byte data[128];                       // Tally Data length is 128 bytes
-int atemID = 7;                       // ATEM ID of the camera
+byte tallyData[128];
+int tallyLength = 0;                    // Tally Data length is 128 bytes
+int atemID = 7;                         // ATEM ID of the camera
 
 void setup() {
-  tally.begin();                      // begins tally control
-  tally.setOverride(false);           // does not override incoming tally
-  pinMode(8, OUTPUT);                 // configures pin 8 as an output
+  tally.begin();                        // begins tally control
+  tally.setOverride(false);             // does not override incoming tally
+  pinMode(8, OUTPUT);                   // configures pin 8 as an output
 }
 
 void loop() {
-  tally.read(data);                   // takes in an array and fills it with the data in the ITDATA register
+  tallyLength = tally.read(tallyData);  // takes in an array and fills it with the data in the ITDATA register
 
-  if ( data[atemID - 1] == 1 ) {      // simple logic that compares camera ATEM ID to entry in the data array
+  if ( data[atemID - 1] == 1 ) {        // simple logic that compares camera ATEM ID to entry in the data array
     digitalWrite(8, HIGH); }
   else {
     digitalWrite(8, LOW); }
   
-  delay(33);                          // wait for 33 milliseconds or just shy of 1 frame at 29.97 or 30 fps
+  delay(33);                            // wait for 33 milliseconds or just shy of 1 frame at 29.97 or 30 fps
 }
