@@ -69,7 +69,7 @@ void loop() {
   
   if ( tallyLength >= 0 && tallyLength < sizeof(tallyData) ) {
     Booting();
-  } else if ( tallyLength == sizeof(tallyData) && tallyLength == 128 ) {
+  } else if ( tallyLength == sizeof(tallyData) ) {
     RunTally();
   } else {
     SOS();
