@@ -13,3 +13,5 @@ This Sketch uses Blackmagic Design's Tally Control class. Specifically, Tally Co
 The basics of this function is you feed it an array of bytes, it pulls the data from the tally data register that is refreshed every video frame, and updates the input array with that data. You can then iterate over the array to get the tally information. The index (0) position of the array corresponds with Camera 1 and goes up from there.
 
 As written, this Sketch requires you to change the variable ```atemID``` to match the ATEM ID of the camera to which that Arduino is connected. This could be easily modified to handle multiple tally inputs on a single unit as all tally information for all cameras is sent down the SDI signal.
+
+I've also added some LED states to give you an idea of what's going on. If the LED is blinking rapidly, then less tally data that is being expected is being received. If the LED is blinking out SOS in Morse Code, then there is something else wrong, most likely that the byte array is too small for the available tally data and ```tallyLength``` is equal to -1.
