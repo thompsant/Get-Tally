@@ -68,7 +68,7 @@ void loop() {
 
   if ( tallyLength >= 0 && tallyLength < sizeof(tallyData) ) {
     Booting();                          // looks to see if tally data is valid
-  } else if ( tallyLength == sizeof(tallyData) ) {
+  } else if ( tallyLength == sizeof(tallyData) && atemID < sizeof(tallyData) ) {
     RunTally();                         // run if normal tally data is received
   } else {
     SOS();                              // something else is wrong, send help
