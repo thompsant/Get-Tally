@@ -18,6 +18,8 @@
    by Anthony Thompson
    modified 05 July 2019
    by Anthony Thompson
+   modified 21 August 2019
+   by Anthony Thompson
 */
 
 // includes the Blackmagic Design SDI Control library.
@@ -30,16 +32,13 @@ int atemID = 4;                         // ATEM ID of the camera
 
 
 void SOS() {                            // outputs SOS pattern to LED
+  int sosTiming[] = {250, 250, 250, 500, 500, 500, 250, 250, 250};
   digitalWrite(8, LOW);
-  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(500); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(500); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(500); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW); delay(100);
-  digitalWrite(8, HIGH); delay(250); digitalWrite(8, LOW);
+
+  for (int i = 0; i < (sizeof(sosTiming) / sizeof(sosTiming[0])); i++) {
+    digitalWrite(8, HIGH); delay(sosTiming[i]); digitalWrite(8, LOW);
+    delay(100);
+  }
   delay(1000);
 }
 
@@ -51,30 +50,13 @@ void RunTally() {                       // simple logic that compares camera ATE
 }
 
 void Booting() {                        // rapidly blink LED if tallyLength is between 0 - 128
+  for (int i = 0; i < 10; i++) {
     digitalWrite(8, HIGH);
     delay(30);
     digitalWrite(8, LOW);
     delay(30);
-    digitalWrite(8, HIGH);
-    delay(30);
-    digitalWrite(8, LOW);
-    delay(30);
-    digitalWrite(8, HIGH);
-    delay(30);
-    digitalWrite(8, LOW);
-    delay(30);
-    digitalWrite(8, HIGH);
-    delay(30);
-    digitalWrite(8, LOW);
-    delay(30);
-    digitalWrite(8, HIGH);
-    delay(30);
-    digitalWrite(8, LOW);
-    delay(30);
-    digitalWrite(8, HIGH);
-    delay(30);
-    digitalWrite(8, LOW);
   }
+}
 
 void setup() {
   tally.begin();                        // begins tally control
