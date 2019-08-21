@@ -74,5 +74,5 @@ void loop() {
     SOS();                              // something else is wrong, send help
   }
   
-  delay(30);                            // wait for a little less than one frame at 30 fps
+  delay(33);                            // wait for a little less than one frame at 30 fps
 }
