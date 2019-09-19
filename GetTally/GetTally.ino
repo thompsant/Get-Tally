@@ -25,56 +25,34 @@
 // includes the Blackmagic Design SDI Control library.
 #include <BMDSDIControl.h>
 
-BMD_SDITallyControl_I2C tally(0x6E);    // declares Tally Control object using the default I²C address
+const int shieldAddress = 0x6E;
+BMD_SDITallyControl_I2C tally(shieldAddress);    // declares Tally Control object using the default I²C address
+BMD_SDICameraControl_I2C ccu(shieldAddress);
 byte tallyData[128];                    // Tally Data length is 128 bytes
 int tallyLength = 0;                    // length of data read from register
-int atemID = 4;                         // ATEM ID of the camera
-
-
-void SOS() {                            // outputs SOS pattern to LED
-  int sosTiming[] = {250, 250, 250, 500, 500, 500, 250, 250, 250};
-  digitalWrite(8, LOW);
-
-  for (int i = 0; i < (sizeof(sosTiming) / sizeof(sosTiming[0])); i++) {
-    digitalWrite(8, HIGH); delay(sosTiming[i]); digitalWrite(8, LOW);
-    delay(100);
-  }
-  delay(1000);
-}
-
-void RunTally() {                       // simple logic that compares camera ATEM ID to entry in the data array
-  if ( tallyData[atemID - 1] == 1 ) {
-    digitalWrite(8, HIGH); }
-  else {
-    digitalWrite(8, LOW); }
-}
-
-void Booting() {                        // rapidly blink LED if tallyLength is between 0 - 128
-  for (int i = 0; i < 10; i++) {
-    digitalWrite(8, HIGH);
-    delay(30);
-    digitalWrite(8, LOW);
-    delay(30);
-  }
-}
+int atemID = 6;                         // ATEM ID of the camera
 
 void setup() {
+//  Serial.begin(9600);                   // open serial port at 9600 bps
   tally.begin();                        // begins tally control
+  ccu.begin();
   tally.setOverride(false);             // does not override incoming tally
+  ccu.setOverride(false);
   pinMode(8, OUTPUT);                   // configures pin 8 as an output
 }
 
 void loop() {
   tallyLength = tally.read(tallyData);  // reads tally data from ITDATA register
-  
 
-  if ( tallyLength >= 0 && tallyLength < sizeof(tallyData) ) {
-    Booting();                          // looks to see if tally data is valid
-  } else if ( tallyLength == sizeof(tallyData) && atemID < sizeof(tallyData) ) {
-    RunTally();                         // run if normal tally data is received
-  } else {
-    SOS();                              // something else is wrong, send help
+  if ( tallyData[atemID - 1] == 1 ) {
+    digitalWrite(8, HIGH); }
+  else {
+    digitalWrite(8, LOW); }
+
+/*  for (int i = 0; i < sizeof(tallyData); i++) {
+   Serial.print(tallyData[i]); 
   }
-  
+  Serial.print("\n");*/
+
   delay(33);                            // wait for a little less than one frame at 30 fps
 }
