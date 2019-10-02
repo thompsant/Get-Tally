@@ -1,24 +1,14 @@
 /*
    Get Tally
 
-   Turns on an LED if Program tally for the chosen camera is detected.
-
    This is written and inteded to be used for the Blackmagic Design 3G-SDI Shield for Arduino.
-   This script will read the incoming tally information via the SDI Input on the SDI Shield and
-   compare the Tally data array to the set ATEM ID in the script. If the Tally data shows Program
-   tally enabled for that ATEM ID, it will turn an LED on that is connected to Digital Pin 8.
+   This script will read the incoming tally brightness information from the Front SDI output on
+   a Blackmagic Design URSA camera. We are using this sketch with our URSA Mini 4K cameras in our
+   studios. We connect the studio viewfinder to the output SDI of the shield.
 
-   This was created for a dedicated LED box at each camera to provide the URSA Mini 4Ks in our studios
-   an "onboard" tally light for use with Autoscript prompter optosensors. Tally Override is not enabled
-   so tally will be passed through the shield to the BMD camera.
-
-   created 03 July 2019
+   created 28 September 2019
    by Anthony Thompson
-   modified 04 July 2019
-   by Anthony Thompson
-   modified 05 July 2019
-   by Anthony Thompson
-   modified 21 August 2019
+   modified 02 October 2019
    by Anthony Thompson
 */
 
@@ -26,33 +16,34 @@
 #include <BMDSDIControl.h>
 
 const int shieldAddress = 0x6E;
-BMD_SDITallyControl_I2C tally(shieldAddress);    // declares Tally Control object using the default I²C address
-BMD_SDICameraControl_I2C ccu(shieldAddress);
-byte tallyData[128];                    // Tally Data length is 128 bytes
-int tallyLength = 0;                    // length of data read from register
-int atemID = 6;                         // ATEM ID of the camera
+BMD_SDICameraControl_I2C ccu(shieldAddress);  // initializes the camera control library to class instance 'ccu'
+
+const byte OFF = 0x00000001;
+byte data = 0x0;
+int ccuLength = 0;
+byte ccuData[256];
 
 void setup() {
 //  Serial.begin(9600);                   // open serial port at 9600 bps
-  tally.begin();                        // begins tally control
   ccu.begin();
-  tally.setOverride(false);             // does not override incoming tally
   ccu.setOverride(false);
+  
   pinMode(8, OUTPUT);                   // configures pin 8 as an output
 }
 
 void loop() {
-  tallyLength = tally.read(tallyData);  // reads tally data from ITDATA register
 
-  if ( tallyData[atemID - 1] == 1 ) {
-    digitalWrite(8, HIGH); }
-  else {
-    digitalWrite(8, LOW); }
+  if ( ccu.available() ) {
+    ccuLength = ccu.read(ccuData);
+    data = ccuData[32];
+  
+    if ( ccuData[32] != OFF ) {
+      digitalWrite(8, HIGH); }
+    else {
+     digitalWrite(8, LOW); }
 
-/*  for (int i = 0; i < sizeof(tallyData); i++) {
-   Serial.print(tallyData[i]); 
+    ccu.flushRead();
   }
-  Serial.print("\n");*/
-
-  delay(33);                            // wait for a little less than one frame at 30 fps
+//  Serial.println(ccuData[32]);
+//  delay(100);
 }
