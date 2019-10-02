@@ -37,7 +37,7 @@ void loop() {
     ccuLength = ccu.read(ccuData);
     data = ccuData[32];
   
-    if ( ccuData[32] != OFF ) {
+    if ( data != OFF ) {
       digitalWrite(8, HIGH); }
     else {
      digitalWrite(8, LOW); }
