@@ -18,7 +18,7 @@
 const int shieldAddress = 0x6E;
 BMD_SDICameraControl_I2C ccu(shieldAddress);  // initializes the camera control library to class instance 'ccu'
 
-const byte OFF = 0x00000001;
+const byte OFF = 0x1;
 byte data = 0x0;
 int ccuLength = 0;
 byte ccuData[256];
