@@ -1,80 +1,49 @@
 /*
    Get Tally
 
-   Turns on an LED if Program tally for the chosen camera is detected.
-
    This is written and inteded to be used for the Blackmagic Design 3G-SDI Shield for Arduino.
-   This script will read the incoming tally information via the SDI Input on the SDI Shield and
-   compare the Tally data array to the set ATEM ID in the script. If the Tally data shows Program
-   tally enabled for that ATEM ID, it will turn an LED on that is connected to Digital Pin 8.
+   This script will read the incoming tally brightness information from the Front SDI output on
+   a Blackmagic Design URSA camera. We are using this sketch with our URSA Mini 4K cameras in our
+   studios. We connect the studio viewfinder to the output SDI of the shield.
 
-   This was created for a dedicated LED box at each camera to provide the URSA Mini 4Ks in our studios
-   an "onboard" tally light for use with Autoscript prompter optosensors. Tally Override is not enabled
-   so tally will be passed through the shield to the BMD camera.
-
-   created 03 July 2019
+   created 28 September 2019
    by Anthony Thompson
-   modified 04 July 2019
-   by Anthony Thompson
-   modified 05 July 2019
-   by Anthony Thompson
-   modified 21 August 2019
+   modified 02 October 2019
    by Anthony Thompson
 */
 
 // includes the Blackmagic Design SDI Control library.
 #include <BMDSDIControl.h>
 
-BMD_SDITallyControl_I2C tally(0x6E);    // declares Tally Control object using the default I²C address
-byte tallyData[128];                    // Tally Data length is 128 bytes
-int tallyLength = 0;                    // length of data read from register
-int atemID = 4;                         // ATEM ID of the camera
+const int shieldAddress = 0x6E;
+BMD_SDICameraControl_I2C ccu(shieldAddress);  // initializes the camera control library to class instance 'ccu'
 
-
-void SOS() {                            // outputs SOS pattern to LED
-  int sosTiming[] = {250, 250, 250, 500, 500, 500, 250, 250, 250};
-  digitalWrite(8, LOW);
-
-  for (int i = 0; i < (sizeof(sosTiming) / sizeof(sosTiming[0])); i++) {
-    digitalWrite(8, HIGH); delay(sosTiming[i]); digitalWrite(8, LOW);
-    delay(100);
-  }
-  delay(1000);
-}
-
-void RunTally() {                       // simple logic that compares camera ATEM ID to entry in the data array
-  if ( tallyData[atemID - 1] == 1 ) {
-    digitalWrite(8, HIGH); }
-  else {
-    digitalWrite(8, LOW); }
-}
-
-void Booting() {                        // rapidly blink LED if tallyLength is between 0 - 128
-  for (int i = 0; i < 10; i++) {
-    digitalWrite(8, HIGH);
-    delay(30);
-    digitalWrite(8, LOW);
-    delay(30);
-  }
-}
+const byte OFF = 0x1;
+byte data = 0x0;
+int ccuLength = 0;
+byte ccuData[256];
 
 void setup() {
-  tally.begin();                        // begins tally control
-  tally.setOverride(false);             // does not override incoming tally
+//  Serial.begin(9600);                   // open serial port at 9600 bps
+  ccu.begin();
+  ccu.setOverride(false);
+  
   pinMode(8, OUTPUT);                   // configures pin 8 as an output
 }
 
 void loop() {
-  tallyLength = tally.read(tallyData);  // reads tally data from ITDATA register
-  
 
-  if ( tallyLength >= 0 && tallyLength < sizeof(tallyData) ) {
-    Booting();                          // looks to see if tally data is valid
-  } else if ( tallyLength == sizeof(tallyData) && atemID < sizeof(tallyData) ) {
-    RunTally();                         // run if normal tally data is received
-  } else {
-    SOS();                              // something else is wrong, send help
-  }
+  if ( ccu.available() ) {
+    ccuLength = ccu.read(ccuData);
+    data = ccuData[32];
   
-  delay(33);                            // wait for a little less than one frame at 30 fps
+    if ( data != OFF ) {
+      digitalWrite(8, HIGH); }
+    else {
+     digitalWrite(8, LOW); }
+
+    ccu.flushRead();
+  }
+//  Serial.println(ccuData[32]);
+//  delay(100);
 }
